@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GHC (best effort)
+        run: |
+          if ! command -v ghc >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y ghc || true
+          fi
+          ghc --version || true
+
+      - name: Build
+        id: build
+        run: |
+          if command -v ghc >/dev/null 2>&1; then
+            make build
+            if [ -f ./eval ]; then echo "BINARY=./eval" >> "$GITHUB_ENV"; fi
+          else
+            echo "ghc unavailable; skipping binary build" >> "$GITHUB_STATUS"
+          fi
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes "See README.md for build and usage instructions. Requires GHC." \
+            --generate-notes || true
+
+      - name: Upload build artifact
+        if: env.BINARY != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.ref_name }}" ${{ env.BINARY }}

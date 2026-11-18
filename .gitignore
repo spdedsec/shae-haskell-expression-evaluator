@@ -1,0 +1,14 @@
+# Compiled artifacts
+eval
+*.hi
+*.o
+
+# Build / distribution
+dist/
+dist-newstyle/
+.cabal-sandbox/
+
+# Editor / OS
+.*.swp
+*~
+.DS_Store
