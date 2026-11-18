@@ -14,7 +14,7 @@ module Main where
 import Control.Exception (catch, SomeException)
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
 import System.Environment (getArgs)
-import System.IO (hFlush, hPutStrLn, stdout)
+import System.IO (hFlush, hPutStrLn, stderr, stdout)
 
 -- ---------------------------------------------------------------------------
 -- Values
